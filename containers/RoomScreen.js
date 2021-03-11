@@ -30,29 +30,29 @@ export default function RoomScreen() {
     fetchData();
 
     // Demander l'autorisation d'accéder à la localisation du user
-    // const askPermission = async () => {
-    //   const { status } = await Location.requestPermissionsAsync();
-    //   if (status === "granted") {
-    //     // S'il autorise, récupérer sa latitude et sa longitude
-    //     const location = await Location.getCurrentPositionAsync();
-    //     // console.log(location);
-    //     // Stocker ses données dans un state
-    //     setLatitude(location.coords.latitude);
-    //     setLongitude(location.coords.longitude);
-    //     setIsLoading(false);
-    //   } else {
-    //     // gérer le cas où le user refuse
-    //   }
-    // };
+    const askPermission = async () => {
+      const { status } = await Location.requestPermissionsAsync();
+      if (status === "granted") {
+        // S'il autorise, récupérer sa latitude et sa longitude
+        const location = await Location.getCurrentPositionAsync();
+        // console.log(location);
+        // Stocker ses données dans un state
+        setLatitude(location.coords.latitude);
+        setLongitude(location.coords.longitude);
+        setIsLoading(false);
+      } else {
+        // gérer le cas où le user refuse
+      }
+    };
 
-    // askPermission();
+    askPermission();
   }, []);
   return isLoading ? (
     <Text>En cours de chargement...</Text>
   ) : (
     <View>
       <DeveloppedRoomCard data={data} />
-      {/* <MapView
+      <MapView
         showsUserLocation={true}
         provider={PROVIDER_GOOGLE}
         initialRegion={{
@@ -70,7 +70,7 @@ export default function RoomScreen() {
             longitude: data.location[0],
           }}
         />
-      </MapView> */}
+      </MapView>
     </View>
   );
 }
