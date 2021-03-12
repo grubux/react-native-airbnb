@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/core";
 import {
   Button,
+  Text,
   View,
   ActivityIndicator,
   StyleSheet,
@@ -30,44 +31,38 @@ export default function HomeScreen() {
     fetchData();
   }, []);
 
+  const homeAnimation = useRef();
+  const playAnimation = () => {
+    homeAnimation.current.play(2, 18);
+  };
+  const pressAnimation = () => {
+    homeAnimation.current.play(0, 1);
+  };
+
   return isLoading ? (
-    <ActivityIndicator
-      style={{ justifyContent: "center", flex: 1 }}
-      size="large"
-      color="blue"
-    />
+    <View style={styles.animationContainer}>
+      <LottieView
+        source={require("../assets/lottieView.json")}
+        loop={true}
+        autoPlay={true}
+        progress={0}
+        style={{
+          width: 400,
+          height: 400,
+          backgroundColor: "#white",
+        }}
+        ref={homeAnimation}
+        // OR find more Lottie files @ https://lottiefiles.com/featured
+        // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
+      />
+    </View>
   ) : (
-    // // <ActivityIndicator
-    // //   style={{ justifyContent: "center", flex: 1 }}
-    // //   size="large"
-    // //   color="blue"
-    // // />
-
-    // <View style={styles.animationContainer}>
-    //   <LottieView
-    //     // ref={(animation) => {
-    //     //   this.animation = animation;
-    //     // }}
-    //     // style={{
-    //       width: 400,
-    //       height: 400,
-    //       backgroundColor: "#eee",
-    //     }}
-    //     source={require("../assets/lottieView.json")}
-    //     // OR find more Lottie files @ https://lottiefiles.com/featured
-    //     // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
-    //   />
-    //   <View style={styles.buttonContainer}>
-    //     <Button
-    //       title="Restart Animation"
-    //       // onPress={this.resetAnimation}
-    //     />
-    //   </View>
-    // </View>
-
     <View style={{ flex: 1 }}>
-      <Header />
+      <Header isClickableHeader={false} />
       {/* Une FlatList est une ScrollView */}
+      {/* <TouchableOpacity onPress={() => {navigation.navigate("Test")}}>
+        <Text>lol</Text>
+      </TouchableOpacity> */}
       <FlatList
         data={data}
         renderItem={({ item }) => {
@@ -83,12 +78,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   animationContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-  },
-  buttonContainer: {
-    paddingTop: 20,
   },
 });

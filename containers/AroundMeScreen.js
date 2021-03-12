@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
 import axios from "axios";
+import LottieView from "lottie-react-native";
 
 import Header from "../components/Header";
 
@@ -16,9 +17,18 @@ const AroundMeScreen = () => {
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
   const [coords, setCoords] = useState([]);
-  //   [{latitude: 43.2424242, longitude: 2.343453353}, {latitude: 43.2424242, longitude: 2.343453353}, ]
 
   const [isLoading, setIsLoading] = useState(true);
+
+  //Loader
+  const homeAnimation = useRef();
+  const playAnimation = () => {
+    homeAnimation.current.play(2, 18);
+  };
+  const pressAnimation = () => {
+    homeAnimation.current.play(0, 1);
+  };
+  //Loader
 
   useEffect(() => {
     const getPermissionLocationAndData = async () => {
@@ -56,14 +66,25 @@ const AroundMeScreen = () => {
   }, []);
 
   return isLoading ? (
-    <ActivityIndicator
-      style={{ justifyContent: "center", flex: 1 }}
-      size="large"
-      color="blue"
-    />
+    <View style={styles.animationContainer}>
+      <LottieView
+        source={require("../assets/lottieView.json")}
+        loop={true}
+        autoPlay={true}
+        progress={0}
+        style={{
+          width: 400,
+          height: 400,
+          backgroundColor: "white",
+        }}
+        ref={homeAnimation}
+        // OR find more Lottie files @ https://lottiefiles.com/featured
+        // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
+      />
+    </View>
   ) : (
     <View>
-      <Header />
+      <Header isClickableHeader={false} />
       <MapView
         showsUserLocation={true}
         initialRegion={{
@@ -114,5 +135,11 @@ const styles = StyleSheet.create({
   map: {
     height: heightMap - 96,
     width: widthMap,
+  },
+  animationContainer: {
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
 });

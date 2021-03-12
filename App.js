@@ -10,6 +10,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
+import HeaderRoomScreen from "./components/HeaderRoomScreen";
 import HomeScreen from "./containers/HomeScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
@@ -20,7 +21,7 @@ import AroundMeScreen from "./containers/AroundMeScreen";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-export default function App() {
+const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
   const [profileData, setProfileData] = useState({});
@@ -52,9 +53,6 @@ export default function App() {
 
     bootstrapAsync();
   }, []);
-
-  // console.log(userToken);
-  // console.log(profileData);
 
   return (
     <SafeAreaView style={styles.droidSafeArea}>
@@ -104,14 +102,17 @@ export default function App() {
                           name="Home"
                           options={{
                             headerShown: false,
-                            headerStyle: { backgroundColor: "red" },
-                            headerTitleStyle: { color: "white" },
                           }}
                         >
                           {() => <HomeScreen />}
                         </Stack.Screen>
 
-                        <Stack.Screen name="Room">
+                        <Stack.Screen
+                          name="Room"
+                          options={{
+                            headerTitle: () => <HeaderRoomScreen />,
+                          }}
+                        >
                           {() => <RoomScreen />}
                         </Stack.Screen>
                       </Stack.Navigator>
@@ -185,7 +186,9 @@ export default function App() {
       </NavigationContainer>
     </SafeAreaView>
   );
-}
+};
+
+export default App;
 
 const styles = StyleSheet.create({
   droidSafeArea: {

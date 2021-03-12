@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, Image, ActivityIndicator } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Image, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import LottieView from "lottie-react-native";
 
 import Header from "../components/Header";
 import LogOutButton from "../components/LogOutButton";
@@ -53,7 +54,16 @@ const ProfileScreen = ({ setToken, token, userId }) => {
     };
     fetchData();
   }, []);
-  //Add a loader
+
+  //Loader
+  const homeAnimation = useRef();
+  const playAnimation = () => {
+    homeAnimation.current.play(2, 18);
+  };
+  const pressAnimation = () => {
+    homeAnimation.current.play(0, 1);
+  };
+  //Loader
 
   const getPermissionAndSelectPhoto = async () => {
     // demander l'autorisation d'accéder à la gallery
@@ -100,15 +110,26 @@ const ProfileScreen = ({ setToken, token, userId }) => {
   };
 
   return isLoading ? (
-    <ActivityIndicator
-      style={{ justifyContent: "center", flex: 1 }}
-      size="large"
-      color="blue"
-    />
+    <View style={styles.animationContainer}>
+      <LottieView
+        source={require("../assets/lottieView.json")}
+        loop={true}
+        autoPlay={true}
+        progress={0}
+        style={{
+          width: 400,
+          height: 400,
+          backgroundColor: "white",
+        }}
+        ref={homeAnimation}
+        // OR find more Lottie files @ https://lottiefiles.com/featured
+        // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
+      />
+    </View>
   ) : (
     <KeyboardAwareScrollView>
       <View style={{ flex: 1 }}>
-        <Header />
+        <Header isClickableHeader={false} />
         <View
           style={{
             justifyContent: "center",
@@ -202,3 +223,12 @@ const ProfileScreen = ({ setToken, token, userId }) => {
 };
 
 export default ProfileScreen;
+
+const styles = StyleSheet.create({
+  animationContainer: {
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+});

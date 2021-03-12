@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRoute } from "@react-navigation/core";
 import { Text, View, StyleSheet } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import axios from "axios";
+import LottieView from "lottie-react-native";
 
 import DeveloppedRoomCard from "../components/DeveloppedRoomCard";
 
@@ -15,8 +16,32 @@ export default function RoomScreen() {
   const [longitude, setLongitude] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  //Loader
+  const homeAnimation = useRef();
+  const playAnimation = () => {
+    homeAnimation.current.play(2, 18);
+  };
+  const pressAnimation = () => {
+    homeAnimation.current.play(0, 1);
+  };
+  //Loader
+
+  const askPermission = async () => {
+    const { status } = await Location.requestPermissionsAsync();
+    if (status === "granted") {
+      // S'il autorise, récupérer sa latitude et sa longitude
+      const location = await Location.getCurrentPositionAsync();
+      // console.log(location);
+      // Stocker ses données dans un state
+      setLatitude(location.coords.latitude);
+      setLongitude(location.coords.longitude);
+    } else {
+      // gérer le cas où le user refuse*
+      console.log("The user did not authorized location informations fetching");
+    }
+  };
+  const fetchData = async () => {
+    try {
       const res = await axios.get(
         `https://express-airbnb-api.herokuapp.com/rooms/${params.roomId}`
       );
@@ -26,31 +51,41 @@ export default function RoomScreen() {
       console.log("data for RoomScreen");
       console.log(data);
       console.log(data.location[0]);
-    };
-    fetchData();
-
-    // Demander l'autorisation d'accéder à la localisation du user
-    const askPermission = async () => {
-      const { status } = await Location.requestPermissionsAsync();
-      if (status === "granted") {
-        // S'il autorise, récupérer sa latitude et sa longitude
-        const location = await Location.getCurrentPositionAsync();
-        // console.log(location);
-        // Stocker ses données dans un state
-        setLatitude(location.coords.latitude);
-        setLongitude(location.coords.longitude);
+    } catch (error) {
+      console.log("Request error");
+    }
+  };
+  useEffect(() => {
+    try {
+      const doUseEffect = async () => {
+        await askPermission();
+        await fetchData();
         setIsLoading(false);
-      } else {
-        // gérer le cas où le user refuse
-      }
-    };
-
-    askPermission();
+      };
+      doUseEffect();
+    } catch (error) {
+      console.log(error.message);
+    }
   }, []);
   return isLoading ? (
-    <Text>En cours de chargement...</Text>
+    <View style={styles.animationContainer}>
+      <LottieView
+        source={require("../assets/lottieView.json")}
+        loop={true}
+        autoPlay={true}
+        progress={0}
+        style={{
+          width: 400,
+          height: 400,
+          backgroundColor: "white",
+        }}
+        ref={homeAnimation}
+        // OR find more Lottie files @ https://lottiefiles.com/featured
+        // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
+      />
+    </View>
   ) : (
-    <View>
+    <View style={{ alignItems: "center" }}>
       <DeveloppedRoomCard data={data} />
       <MapView
         showsUserLocation={true}
@@ -79,5 +114,11 @@ const styles = StyleSheet.create({
   map: {
     height: 361,
     width: "100%",
+  },
+  animationContainer: {
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
 });

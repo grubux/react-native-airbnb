@@ -6,6 +6,7 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
@@ -23,120 +24,90 @@ const DeveloppedRoomCard = ({ data }) => {
   const colors = ["tomato", "thistle", "skyblue", "teal"];
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <View style={styles.testContainer}>
-          <Text>test</Text>
+    <ScrollView>
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
           <SwiperFlatList
-            removeClippedSubviews={false}
             autoplay
             autoplayDelay={2}
             autoplayLoop
-            index={2}
+            index={0}
             showPagination
-            data={colors}
+            data={data.photos}
             renderItem={({ item }) => (
               <View style={[styles.testChild, { backgroundColor: item }]}>
-                <Text style={styles.testText}>haha</Text>
+                <ImageBackground
+                  source={{ uri: item.url }}
+                  style={styles.image}
+                >
+                  <View style={styles.priceView}>
+                    <Text style={styles.price}>{data.price} €</Text>
+                  </View>
+                </ImageBackground>
               </View>
             )}
           />
         </View>
-        {/* <View styles={styles.testContainer}>
-          <SwiperFlatList
-          //   autoplay
-          //   autoplayDelay={2}
-          //   autoplayLoop
-          index={2}
-          showPagination
-          data={data.photos}
-          renderItem={({ item }) => (
-              <View style={[styles.testChild, { backgroundColor: item }]}>
-              <ImageBackground
-              source={{ uri: item.url }}
-              style={styles.image}
-              >
-              <View style={styles.priceView}>
-              <Text style={styles.price}>{data.price} €</Text>
-              </View>
-              </ImageBackground>
-              </View>
-              )}
-              />
-            </View> */}
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-          marginBottom: 5,
-          marginTop: 5,
-        }}
-      >
-        <View>
-          <Text
-            numberOfLines={1}
-            style={{ fontSize: 20, width: 295, marginTop: 15 }}
-          >
-            {data.title}
-          </Text>
-          <View
-            style={{ flexDirection: "row", marginTop: 10, marginBottom: 10 }}
-          >
-            <Stars ratingValue={data.ratingValue} />
-            <Text style={{ marginLeft: 5, color: "lightgrey" }}>
-              {data.reviews} reviews
+        <View style={styles.card}>
+          <View>
+            <Text numberOfLines={1} style={styles.cardBottomText}>
+              {data.title}
             </Text>
+            <View style={styles.reviewsStars}>
+              <Stars ratingValue={data.ratingValue} />
+              <Text style={{ marginLeft: 5, color: "lightgrey" }}>
+                {data.reviews} reviews
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <Image
-          source={{ uri: data.user.account.photo.url }}
-          style={styles.userPhoto}
-        />
-      </View>
-      <View>
-        <TouchableOpacity
-          onPress={() => {
-            setToggledText(!toggledText);
-          }}
-        >
-          <Text
-            multiline0
-            numberOfLines={toggledText ? 0 : 3}
-            style={{ textAlign: "justify" }}
+          <Image
+            source={{ uri: data.user.account.photo.url }}
+            style={styles.userPhoto}
+          />
+        </View>
+        <View>
+          <TouchableOpacity
+            onPress={() => {
+              setToggledText(!toggledText);
+            }}
           >
-            {data.description}
-          </Text>
-          <View style={{ width: 100, flexDirection: "row" }}>
-            <Text style={{ color: "grey" }}>
-              {toggledText ? "Show less" : "Show more"}
+            <Text
+              multiline0
+              numberOfLines={toggledText ? 0 : 3}
+              style={{ textAlign: "justify" }}
+            >
+              {data.description}
             </Text>
-            <AntDesign
-              style={{
-                marginLeft: toggledText ? 8 : 8,
-                marginTop: 2,
-              }}
-              name={toggledText ? "up" : "down"}
-              size={toggledText ? 18 : 17}
-              color="grey"
-            />
-          </View>
-        </TouchableOpacity>
+            <View style={{ width: 100, flexDirection: "row" }}>
+              <Text style={{ color: "grey" }}>
+                {toggledText ? "Show less" : "Show more"}
+              </Text>
+              <AntDesign
+                style={{
+                  marginLeft: toggledText ? 8 : 8,
+                  marginTop: 2,
+                }}
+                name={toggledText ? "up" : "down"}
+                size={toggledText ? 18 : 17}
+                color="grey"
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 export default DeveloppedRoomCard;
 
 const styles = StyleSheet.create({
   wrapper: {
+    flex: 1,
     marginRight: 15,
     marginLeft: 15,
     marginBottom: 10,
-    marginTop: 300,
+    marginTop: 5,
   },
 
   container: {
@@ -160,11 +131,25 @@ const styles = StyleSheet.create({
   },
   price: { color: "white" },
   userPhoto: { height: 85, width: 85, borderRadius: 43 },
-  testContainer: { flex: 1, backgroundColor: "red" },
   testChild: {
-    width: 300,
-    justifyContent: "center",
-    backgroundColor: "yellow",
+    width: 383,
   },
-  testText: { fontSize: 30, textAlign: "center", color: "blue" },
+  card: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  cardBottomText: {
+    fontSize: 20,
+    width: 295,
+    marginTop: 15,
+  },
+  reviewsStars: {
+    flexDirection: "row",
+    marginTop: 10,
+    marginBottom: 10,
+  },
 });
